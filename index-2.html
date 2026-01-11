@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGI Era</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-card: #18181b;
+            --text-primary: #fafafa;
+            --text-secondary: #71717a;
+            --accent: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-glow: rgba(0, 212, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Noise overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.015;
+            z-index: 1000;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Grid background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Glow orbs */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: -1;
+            transition: all 1s ease;
+        }
+
+        .glow-orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .glow-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
+            bottom: 10%;
+            left: -100px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        .glow-orb-3 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+            top: 50%;
+            right: 20%;
+            animation: float 30s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            padding: 0.625rem 1.5rem;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            min-height: 100vh;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-badge span {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 600;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease 0.1s both;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 540px;
+            margin-bottom: 3rem;
+            font-weight: 400;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--text-secondary);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            animation: fadeIn 1s ease 0.5s both;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--text-secondary), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Sections */
+        .section-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 8rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 4rem;
+            max-width: 600px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.7;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 6rem 4rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-item p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Research Page */
+        .research-hero {
+            padding: 10rem 4rem 6rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .research-hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+
+        .research-hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .research-papers {
+            padding: 0 4rem 6rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .papers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .paper-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .paper-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .paper-tag {
+            display: inline-block;
+            padding: 0.375rem 0.875rem;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+        }
+
+        .paper-tag.purple {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-purple);
+        }
+
+        .paper-tag.green {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        .paper-tag.orange {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-orange);
+        }
+
+        .paper-card h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+        }
+
+        .paper-card p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .paper-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .paper-authors {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .author-avatars {
+            display: flex;
+        }
+
+        .author-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            border: 2px solid var(--bg-card);
+            margin-left: -8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            font-weight: 600;
+        }
+
+        .author-avatar:first-child {
+            margin-left: 0;
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            padding: 6rem 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .timeline-section h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), var(--accent-purple), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3rem;
+            top: 6px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--bg-primary);
+        }
+
+        .timeline-date {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-item h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-item p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.7;
+        }
+
+        /* About Page */
+        .about-hero {
+            padding: 10rem 4rem 6rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .about-hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-hero .lead {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .about-visual {
+            position: relative;
+            height: 500px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .neural-network {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: nodePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .mission-section {
+            padding: 6rem 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .mission-section h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .mission-text {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 4rem;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .value-card {
+            text-align: center;
+            padding: 2.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .value-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .value-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .value-card p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        /* Team Section */
+        .team-section {
+            padding: 6rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .team-section h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .team-section > p {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .team-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.375rem;
+        }
+
+        .team-role {
+            color: var(--accent);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .team-bio {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* Docs Page */
+        .docs-layout {
+            padding-top: 5rem;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .docs-sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 2rem;
+            position: sticky;
+            top: 5rem;
+            height: calc(100vh - 5rem);
+            overflow-y: auto;
+        }
+
+        .docs-nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .docs-nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .docs-nav-links {
+            list-style: none;
+        }
+
+        .docs-nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-nav-links a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .docs-nav-links a:hover,
+        .docs-nav-links a.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .docs-content {
+            padding: 3rem 4rem;
+            max-width: 900px;
+        }
+
+        .docs-content h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .docs-content > p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 3rem;
+            line-height: 1.7;
+        }
+
+        .docs-section {
+            margin-bottom: 4rem;
+        }
+
+        .docs-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .docs-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .code-block .comment {
+            color: var(--text-secondary);
+        }
+
+        .code-block .keyword {
+            color: var(--accent-purple);
+        }
+
+        .code-block .string {
+            color: var(--accent-green);
+        }
+
+        .code-block .function {
+            color: var(--accent);
+        }
+
+        .api-endpoint {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .api-method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border-radius: 4px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 1rem;
+        }
+
+        .api-method.post {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-orange);
+        }
+
+        .api-path {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .api-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 6rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .demo-section h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .demo-section > p {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .demo-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .demo-header {
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+        }
+
+        .demo-dot.red { background: #ff5f56; }
+        .demo-dot.yellow { background: #ffbd2e; }
+        .demo-dot.green { background: #27ca40; }
+
+        .demo-body {
+            padding: 2rem;
+            min-height: 400px;
+        }
+
+        .demo-chat {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 1rem;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .chat-avatar.user {
+            background: var(--text-secondary);
+        }
+
+        .chat-bubble {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            max-width: 80%;
+        }
+
+        .chat-bubble p {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .demo-input {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .demo-input input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9375rem;
+        }
+
+        .demo-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .demo-input input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .demo-input button {
+            padding: 1rem 2rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .demo-input button:hover {
+            transform: scale(1.05);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 10rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-glow {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .cta h2 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            position: relative;
+        }
+
+        .cta .btn-primary {
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .modal h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .modal .btn-primary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .about-hero {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-visual {
+                height: 300px;
+            }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .docs-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .docs-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 7rem 1.5rem 4rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .features {
+                padding: 4rem 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                padding: 4rem 1.5rem;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .research-hero,
+            .research-papers,
+            .timeline-section,
+            .mission-section,
+            .team-section,
+            .demo-section {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .papers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta {
+                padding: 6rem 1.5rem;
+            }
+
+            footer {
+                padding: 2rem 1.5rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+
+    <nav>
+        <div class="logo" onclick="showPage('home')">
+            <div class="logo-icon">◈</div>
+            AGI Era
+        </div>
+        <ul class="nav-links">
+            <li><a onclick="showPage('home')" class="active" data-page="home">Features</a></li>
+            <li><a onclick="showPage('research')" data-page="research">Research</a></li>
+            <li><a onclick="showPage('about')" data-page="about">About</a></li>
+            <li><a onclick="showPage('docs')" data-page="docs">Docs</a></li>
+        </ul>
+        <button class="nav-cta" onclick="openModal()">Get Started</button>
+    </nav>
+
+    <!-- Home Page -->
+    <div class="page active" id="page-home">
+        <section class="hero">
+            <div class="hero-badge">
+                <span></span>
+                Introducing AGI Era v2.0
+            </div>
+            <h1>The Future of<br><span class="gradient">Intelligence</span></h1>
+            <p>Building the next generation of artificial general intelligence. Pushing the boundaries of what machines can understand, reason, and create.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="openModal()">
+                    Try Now
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="btn-secondary" onclick="showPage('docs')">Read Documentation</button>
+            </div>
+            <div class="scroll-indicator">
+                <span>Scroll</span>
+                <div class="scroll-line"></div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <p class="section-label">Capabilities</p>
+            <h2>Advanced AI systems designed for the real world</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Reasoning Engine</h3>
+                    <p>Multi-step logical reasoning with chain-of-thought capabilities. Solve complex problems through structured thinking and analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Embodied Intelligence</h3>
+                    <p>Seamless integration with robotic systems for real-world task execution. From manipulation to navigation, powered by advanced perception.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-time Processing</h3>
+                    <p>Ultra-low latency inference optimized for edge deployment. Make decisions in milliseconds, not seconds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Multimodal Understanding</h3>
+                    <p>Process and understand text, images, audio, and video in unified representations. True cross-modal comprehension.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Safe by Design</h3>
+                    <p>Built-in alignment and safety mechanisms. Interpretable decision-making with human oversight at every level.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Global Scale</h3>
+                    <p>Distributed infrastructure supporting billions of interactions. Enterprise-grade reliability and performance.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="demo-section">
+            <p class="section-label">Live Demo</p>
+            <h2>Experience AGI Era</h2>
+            <p>Interact with our latest model in real-time</p>
+            <div class="demo-container">
+                <div class="demo-header">
+                    <div class="demo-dot red"></div>
+                    <div class="demo-dot yellow"></div>
+                    <div class="demo-dot green"></div>
+                </div>
+                <div class="demo-body">
+                    <div class="demo-chat" id="demo-chat">
+                        <div class="chat-message">
+                            <div class="chat-avatar">◈</div>
+                            <div class="chat-bubble">
+                                <p>Hello! I'm AGI Era v2.0. I can help you with complex reasoning, code generation, creative writing, and much more. What would you like to explore today?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="demo-input">
+                    <input type="text" id="demo-input-field" placeholder="Ask me anything..." onkeypress="handleDemoInput(event)">
+                    <button onclick="sendDemoMessage()">Send</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3>10T+</h3>
+                    <p>Parameters</p>
+                </div>
+                <div class="stat-item">
+                    <h3>50ms</h3>
+                    <p>Avg. Latency</p>
+                </div>
+                <div class="stat-item">
+                    <h3>99.9%</h3>
+                    <p>Uptime</p>
+                </div>
+                <div class="stat-item">
+                    <h3>1M+</h3>
+                    <p>Developers</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="cta-glow"></div>
+            <h2>Ready to build<br>the future?</h2>
+            <p>Join thousands of researchers and developers pushing the boundaries of artificial intelligence.</p>
+            <button class="btn-primary" onclick="openModal()">
+                Start Building
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </section>
+    </div>
+
+    <!-- Research Page -->
+    <div class="page" id="page-research">
+        <div class="research-hero">
+            <p class="section-label">Research</p>
+            <h1>Advancing the<br><span class="gradient">Frontier of AI</span></h1>
+            <p>Our research team publishes groundbreaking work on reasoning, safety, scalability, and the theoretical foundations of artificial general intelligence.</p>
+        </div>
+
+        <div class="research-papers">
+            <div class="papers-grid">
+                <div class="paper-card">
+                    <span class="paper-tag">Reasoning</span>
+                    <h3>Chain-of-Thought Scaling Laws: Emergent Reasoning in Large Language Models</h3>
+                    <p>We investigate how reasoning capabilities emerge as model scale increases, discovering phase transitions in logical reasoning abilities.</p>
+                    <div class="paper-meta">
+                        <div class="paper-authors">
+                            <div class="author-avatars">
+                                <div class="author-avatar">JL</div>
+                                <div class="author-avatar">MK</div>
+                                <div class="author-avatar">AS</div>
+                            </div>
+                            <span>+ 8 authors</span>
+                        </div>
+                        <span>December 2024</span>
+                    </div>
+                </div>
+
+                <div class="paper-card">
+                    <span class="paper-tag purple">Safety</span>
+                    <h3>Constitutional AI: Harmlessness from AI Feedback</h3>
+                    <p>A novel approach to training AI systems that are helpful, harmless, and honest through a principled framework of self-improvement.</p>
+                    <div class="paper-meta">
+                        <div class="paper-authors">
+                            <div class="author-avatars">
+                                <div class="author-avatar">YB</div>
+                                <div class="author-avatar">SC</div>
+                            </div>
+                            <span>+ 12 authors</span>
+                        </div>
+                        <span>November 2024</span>
+                    </div>
+                </div>
+
+                <div class="paper-card">
+                    <span class="paper-tag green">Architecture</span>
+                    <h3>Sparse Mixture of Experts at Scale: Beyond Dense Transformers</h3>
+                    <p>Introducing a new architecture that achieves 10x computational efficiency while maintaining state-of-the-art performance on reasoning benchmarks.</p>
+                    <div class="paper-meta">
+                        <div class="paper-authors">
+                            <div class="author-avatars">
+                                <div class="author-avatar">RW</div>
+                                <div class="author-avatar">TN</div>
+                                <div class="author-avatar">KP</div>
+                            </div>
+                            <span>+ 5 authors</span>
+                        </div>
+                        <span>October 2024</span>
+                    </div>
+                </div>
+
+                <div class="paper-card">
+                    <span class="paper-tag orange">Multimodal</span>
+                    <h3>Unified Vision-Language Representations for General Intelligence</h3>
+                    <p>A groundbreaking approach to creating unified representations across vision, language, and audio modalities for seamless cross-modal understanding.</p>
+                    <div class="paper-meta">
+                        <div class="paper-authors">
+                            <div class="author-avatars">
+                                <div class="author-avatar">EH</div>
+                                <div class="author-avatar">DL</div>
+                            </div>
+                            <span>+ 9 authors</span>
+                        </div>
+                        <span>September 2024</span>
+                    </div>
+                </div>
+
+                <div class="paper-card">
+                    <span class="paper-tag">Reasoning</span>
+                    <h3>Mathematical Reasoning via Formal Verification</h3>
+                    <p>Combining neural networks with formal theorem provers to achieve unprecedented accuracy in mathematical reasoning tasks.</p>
+                    <div class="paper-meta">
+                        <div class="paper-authors">
+                            <div class="author-avatars">
+                                <div class="author-avatar">PZ</div>
+                                <div class="author-avatar">HM</div>
+                            </div>
+                            <span>+ 6 authors</span>
+                        </div>
+                        <span>August 2024</span>
+                    </div>
+                </div>
+
+                <div class="paper-card">
+                    <span class="paper-tag purple">Safety</span>
+                    <h3>Interpretable Decision Making in High-Stakes Environments</h3>
+                    <p>Novel techniques for understanding and explaining AI decision-making in critical applications like healthcare and autonomous systems.</p>
+                    <div class="paper-meta">
+                        <div class="paper-authors">
+                            <div class="author-avatars">
+                                <div class="author-avatar">LW</div>
+                                <div class="author-avatar">AC</div>
+                                <div class="author-avatar">BT</div>
+                            </div>
+                            <span>+ 4 authors</span>
+                        </div>
+                        <span>July 2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-section">
+            <h2>Research Milestones</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Q4 2024</div>
+                    <h3>AGI Era v2.0 Release</h3>
+                    <p>Launched our most capable model yet, featuring 10T parameters and breakthrough reasoning abilities that surpass human-level performance on complex tasks.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Q3 2024</div>
+                    <h3>Constitutional AI Framework</h3>
+                    <p>Published our comprehensive approach to AI safety, enabling models to learn human values through principled self-improvement.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Q2 2024</div>
+                    <h3>Multimodal Integration</h3>
+                    <p>Achieved seamless understanding across text, images, audio, and video with our unified representation framework.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Q1 2024</div>
+                    <h3>Real-time Edge Deployment</h3>
+                    <p>Developed novel optimization techniques enabling 50ms latency for complex inference tasks on edge devices.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2023</div>
+                    <h3>Company Founded</h3>
+                    <p>AGI Era was founded with a mission to develop safe and beneficial artificial general intelligence for humanity.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Page -->
+    <div class="page" id="page-about">
+        <div class="about-hero">
+            <div>
+                <p class="section-label">About Us</p>
+                <h1>Building AI for<br>Humanity's Benefit</h1>
+                <p class="lead">We're a team of researchers, engineers, and dreamers united by a common goal: creating artificial general intelligence that is safe, beneficial, and accessible to all.</p>
+                <button class="btn-primary" onclick="openModal()">
+                    Join Our Team
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="about-visual">
+                <div class="neural-network" id="neural-network">
+                    <!-- Nodes will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="mission-section">
+            <h2>Our Mission</h2>
+            <p class="mission-text">At AGI Era, we believe artificial general intelligence has the potential to be the most transformative technology in human history. Our mission is to ensure this technology benefits all of humanity by developing AGI systems that are safe, aligned with human values, and accessible to researchers and developers worldwide.</p>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🔬</div>
+                    <h3>Research Excellence</h3>
+                    <p>We pursue fundamental research at the frontier of AI, publishing our findings to advance the field collectively.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h3>Safety First</h3>
+                    <p>Every system we build prioritizes safety and alignment with human values from the ground up.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌍</div>
+                    <h3>Global Impact</h3>
+                    <p>We work to ensure AI benefits are distributed broadly and equitably across the world.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-section">
+            <h2>Our Leadership</h2>
+            <p>Meet the people driving our mission forward</p>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">SL</div>
+                    <h3>Dr. Sarah Liu</h3>
+                    <div class="team-role">CEO & Co-Founder</div>
+                    <p class="team-bio">Former AI research lead at DeepMind. PhD in Machine Learning from Stanford.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">MK</div>
+                    <h3>Dr. Michael Kim</h3>
+                    <div class="team-role">Chief Scientist</div>
+                    <p class="team-bio">Pioneer in transformer architectures. Previously Principal Scientist at OpenAI.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">EP</div>
+                    <h3>Elena Petrov</h3>
+                    <div class="team-role">VP of Engineering</div>
+                    <p class="team-bio">Built ML infrastructure at Google scale. 15+ years in distributed systems.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">JC</div>
+                    <h3>Dr. James Chen</h3>
+                    <div class="team-role">Head of Safety</div>
+                    <p class="team-bio">Leading researcher in AI alignment. Author of "Safe AGI: A Framework."</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">AR</div>
+                    <h3>Amara Robinson</h3>
+                    <div class="team-role">VP of Product</div>
+                    <p class="team-bio">Former product lead at Anthropic. Passionate about human-AI interaction.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">DT</div>
+                    <h3>Dr. David Torres</h3>
+                    <div class="team-role">Head of Research</div>
+                    <p class="team-bio">Published 100+ papers on neural networks. ACM Fellow.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Docs Page -->
+    <div class="page" id="page-docs">
+        <div class="docs-layout">
+            <aside class="docs-sidebar">
+                <div class="docs-nav-section">
+                    <div class="docs-nav-title">Getting Started</div>
+                    <ul class="docs-nav-links">
+                        <li><a class="active" onclick="showDocsSection('intro')">Introduction</a></li>
+                        <li><a onclick="showDocsSection('quickstart')">Quick Start</a></li>
+                        <li><a onclick="showDocsSection('authentication')">Authentication</a></li>
+                    </ul>
+                </div>
+                <div class="docs-nav-section">
+                    <div class="docs-nav-title">API Reference</div>
+                    <ul class="docs-nav-links">
+                        <li><a onclick="showDocsSection('completions')">Completions</a></li>
+                        <li><a onclick="showDocsSection('chat')">Chat</a></li>
+                        <li><a onclick="showDocsSection('embeddings')">Embeddings</a></li>
+                        <li><a onclick="showDocsSection('models')">Models</a></li>
+                    </ul>
+                </div>
+                <div class="docs-nav-section">
+                    <div class="docs-nav-title">Guides</div>
+                    <ul class="docs-nav-links">
+                        <li><a onclick="showDocsSection('prompting')">Prompt Engineering</a></li>
+                        <li><a onclick="showDocsSection('safety')">Safety Best Practices</a></li>
+                        <li><a onclick="showDocsSection('scaling')">Scaling Your App</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <main class="docs-content">
+                <h1>AGI Era Documentation</h1>
+                <p>Everything you need to integrate AGI Era's powerful AI capabilities into your applications.</p>
+
+                <div class="docs-section" id="docs-intro">
+                    <h2>Introduction</h2>
+                    <p>AGI Era provides state-of-the-art AI models through a simple, powerful API. Whether you're building chatbots, code assistants, content generators, or complex reasoning systems, our platform gives you access to models with unprecedented capabilities.</p>
+                    <p>Our API is designed to be:</p>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; line-height: 2;">
+                        <li><strong style="color: var(--text-primary);">Simple</strong> - Get started with just a few lines of code</li>
+                        <li><strong style="color: var(--text-primary);">Powerful</strong> - Access models with 10T+ parameters</li>
+                        <li><strong style="color: var(--text-primary);">Fast</strong> - Average latency under 50ms</li>
+                        <li><strong style="color: var(--text-primary);">Safe</strong> - Built-in content filtering and safety features</li>
+                    </ul>
+                </div>
+
+                <div class="docs-section" id="docs-quickstart">
+                    <h2>Quick Start</h2>
+                    <p>Get up and running with AGI Era in under 5 minutes. First, install our SDK:</p>
+                    <div class="code-block">
+                        <pre><span class="comment"># Install the AGI Era SDK</span>
+pip install agiera
+
+<span class="comment"># Or with npm for Node.js</span>
+npm install @agiera/sdk</pre>
+                    </div>
+                    <p>Then make your first API call:</p>
+                    <div class="code-block">
+                        <pre><span class="keyword">import</span> agiera
+
+client = agiera.<span class="function">Client</span>(api_key=<span class="string">"your-api-key"</span>)
+
+response = client.chat.<span class="function">create</span>(
+    model=<span class="string">"agi-era-v2"</span>,
+    messages=[
+        {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello, AGI Era!"</span>}
+    ]
+)
+
+<span class="keyword">print</span>(response.message.content)</pre>
+                    </div>
+                </div>
+
+                <div class="docs-section" id="docs-api">
+                    <h2>API Endpoints</h2>
+                    <p>Here are the main endpoints you'll use to interact with AGI Era:</p>
+                    
+                    <div class="api-endpoint">
+                        <span class="api-method post">POST</span>
+                        <span class="api-path">/v1/chat/completions</span>
+                        <p class="api-description">Create a chat completion with multi-turn conversation support</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method post">POST</span>
+                        <span class="api-path">/v1/completions</span>
+                        <p class="api-description">Generate text completions from a prompt</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method post">POST</span>
+                        <span class="api-path">/v1/embeddings</span>
+                        <p class="api-description">Create vector embeddings for text inputs</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method">GET</span>
+                        <span class="api-path">/v1/models</span>
+                        <p class="api-description">List all available models and their capabilities</p>
+                    </div>
+                </div>
+
+                <div class="docs-section" id="docs-models">
+                    <h2>Available Models</h2>
+                    <p>Choose the right model for your use case:</p>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">AGI Era v2.0</h3>
+                        <p>Our flagship model with 10T parameters. Best for complex reasoning, creative writing, and code generation. Supports multimodal inputs including images and audio.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">AGI Era Lite</h3>
+                        <p>Optimized for speed and cost-efficiency. 1T parameters with 10ms latency. Ideal for real-time applications and high-volume use cases.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">AGI Era Code</h3>
+                        <p>Specialized for programming tasks. Trained on 500B+ tokens of code across 80+ languages. Includes built-in code execution sandbox.</p>
+                    </div>
+                </div>
+
+                <div class="docs-section" id="docs-safety">
+                    <h2>Safety & Best Practices</h2>
+                    <p>AGI Era models are designed with safety as a core principle. Here's how to use them responsibly:</p>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Content Filtering</h3>
+                        <p>All outputs are automatically filtered for harmful content. You can customize sensitivity levels through the API.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Rate Limiting</h3>
+                        <p>Implement appropriate rate limits to prevent abuse and ensure fair usage across your user base.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Human Oversight</h3>
+                        <p>For high-stakes applications, we recommend implementing human review workflows for AI-generated content.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <h2>Get Started</h2>
+            <p>Create your account to access AGI Era's powerful AI capabilities.</p>
+            <form onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Create a password" required>
+                </div>
+                <button type="submit" class="btn-primary">
+                    Create Account
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Security</a>
+                <a href="#">Status</a>
+                <a href="#">Careers</a>
+                <a href="#">Blog</a>
+            </div>
+            <p class="footer-copy">© 2025 AGI Era. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Page Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            
+            // Update nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Generate neural network nodes for about page
+            if (pageId === 'about') {
+                generateNeuralNetwork();
+            }
+        }
+
+        // Modal functions
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            alert('Thanks for signing up! Check your email for next steps.');
+            closeModal();
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Demo chat
+        const demoResponses = [
+            "That's a great question! Let me think through this step by step...",
+            "Based on my analysis, I can help you with that. Here's what I recommend...",
+            "I understand what you're looking for. Let me provide a comprehensive answer...",
+            "Interesting! I can see several approaches to solve this problem...",
+            "I'd be happy to help! Here's my detailed response..."
+        ];
+
+        function sendDemoMessage() {
+            const input = document.getElementById('demo-input-field');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chat = document.getElementById('demo-chat');
+            
+            // Add user message
+            chat.innerHTML += `
+                <div class="chat-message">
+                    <div class="chat-avatar user">U</div>
+                    <div class="chat-bubble">
+                        <p>${escapeHtml(message)}</p>
+                    </div>
+                </div>
+            `;
+            
+            input.value = '';
+            
+            // Add AI response after delay
+            setTimeout(() => {
+                const response = demoResponses[Math.floor(Math.random() * demoResponses.length)];
+                chat.innerHTML += `
+                    <div class="chat-message">
+                        <div class="chat-avatar">◈</div>
+                        <div class="chat-bubble">
+                            <p>${response}</p>
+                        </div>
+                    </div>
+                `;
+                chat.scrollTop = chat.scrollHeight;
+            }, 1000);
+        }
+
+        function handleDemoInput(e) {
+            if (e.key === 'Enter') {
+                sendDemoMessage();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Generate neural network visualization
+        function generateNeuralNetwork() {
+            const container = document.getElementById('neural-network');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            const nodeCount = 30;
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.style.left = `${10 + Math.random() * 80}%`;
+                node.style.top = `${10 + Math.random() * 80}%`;
+                node.style.animationDelay = `${Math.random() * 3}s`;
+                node.style.opacity = `${0.3 + Math.random() * 0.7}`;
+                node.style.width = `${8 + Math.random() * 12}px`;
+                node.style.height = node.style.width;
+                container.appendChild(node);
+            }
+        }
+
+        // Smooth reveal on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Initialize animations
+        function initAnimations() {
+            document.querySelectorAll('.feature-card, .stat-item, .paper-card, .value-card, .team-card, .timeline-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                el.style.transitionDelay = `${index * 0.05}s`;
+                observer.observe(el);
+            });
+        }
+
+        // Docs section navigation
+        function showDocsSection(sectionId) {
+            document.querySelectorAll('.docs-nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Scroll to section
+            const section = document.getElementById(`docs-${sectionId}`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initAnimations();
+        });
+    </script>
+</body>
+</html>
